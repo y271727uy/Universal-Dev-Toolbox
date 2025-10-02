@@ -1,0 +1,9 @@
+# 生物-生物群系黑名单配置 (Bad Mob-Biome Configuration)
+# 用于屏蔽特定生物在特定生物群系中的生成
+# Used to disable specific mobs from spawning in specific biomes
+# 禁用指定生物在指定生物群系生成的列表 (List of mob-biome pairs where the mob generation is disabled)
+# 格式: "modid:entity_name;modid:biome_name"
+# Format: "modid:entity_name;modid:biome_name"
+# 示例: "minecraft:zombie;minecraft:plains"
+# Example: "minecraft:zombie;minecraft:plains"
+blacklisted_mob_biome_pairs = []

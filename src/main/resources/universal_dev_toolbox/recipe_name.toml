@@ -1,0 +1,3 @@
+# 配方名称配置 (Recipe Name Configuration)
+# 为配方ID添加单引号 (Add single quotes around recipe names)
+add_quotes = false

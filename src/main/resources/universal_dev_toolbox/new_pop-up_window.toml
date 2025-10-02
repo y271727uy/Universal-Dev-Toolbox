@@ -1,0 +1,9 @@
+# New Pop-up Window Configuration
+# 自定义弹窗消息列表
+# These messages will be shown as system chat messages when the game starts
+# 格式: "message"
+# Format: "message"
+# 示例: "Welcome to our modpack!"
+# Example: "Welcome to our modpack!"
+# 支持中文消息 (Supports Chinese messages)
+custom_popup_messages = []

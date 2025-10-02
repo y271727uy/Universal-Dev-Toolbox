@@ -1,0 +1,11 @@
+{
+  "commands.udt.recipe_print.no_item": "You are not holding any item!",
+  "commands.udt.recipe_print.no_recipes": "No recipes found for this item.",
+  "commands.udt.recipe_print.error": "An error occurred while processing the command.",
+  "commands.udt.recipe_print.title": "Recipes for item: {}",
+  "commands.udt.tag_print.title": "Tags for item: {}",
+  "commands.udt.tag_print.no_tags": "No tags found for this item.",
+  "commands.udt.tag_print.compare_title": "Comparing tags for items: {} and {}",
+  "commands.udt.tag_print.no_common_tags": "No common tags found between these items.",
+  "commands.udt.tag_print.same_tags": "@same tag"
+}

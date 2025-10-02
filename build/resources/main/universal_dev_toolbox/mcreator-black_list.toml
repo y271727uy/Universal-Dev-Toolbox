@@ -1,0 +1,8 @@
+# MCreator Blacklist Configuration
+# 将始终被视为MCreator模组的模组ID列表
+# List of mod IDs that should always be treated as MCreator mods
+# 格式: "modid"
+# Format: "modid"
+# 示例: "examplemod"
+# Example: "examplemod"
+blacklisted_mods = []

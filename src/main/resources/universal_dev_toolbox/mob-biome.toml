@@ -1,0 +1,13 @@
+# 生物-生物群系白名单配置 (Mob-Biome Whitelist Configuration)
+# 用于控制生物只能在指定的生物群系中生成
+# Used to control mobs spawning only in specified biomes
+# 启用自动清理不在允许生物群系中的生物 (Enable automatic cleanup of mobs that are not in their allowed biomes)
+# 此功能已弃用，仅在配置中保留向后兼容
+# This feature is deprecated and kept only for backward compatibility
+enable_whitelist_cleanup = true
+# 仅允许指定生物在指定生物群系生成的列表 (List of mob-biome pairs where the mob generation is exclusively allowed)
+# 格式: "modid:entity_name;modid:biome_name"
+# Format: "modid:entity_name;modid:biome_name"
+# 示例: "minecraft:skeleton;minecraft:nether_wastes"
+# Example: "minecraft:skeleton;minecraft:nether_wastes"
+whitelisted_mob_biome_pairs = []

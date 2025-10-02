@@ -1,0 +1,8 @@
+# Bad Pop-up Window Configuration
+# 将被阻止在系统聊天消息中显示的字符串列表
+# Any system message containing these strings will be suppressed
+# 格式: "string_to_block"
+# Format: "string_to_block"
+# 示例: "关注"
+# Example: "关注"
+bad_popup_contents = []

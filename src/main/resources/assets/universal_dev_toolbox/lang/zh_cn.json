@@ -1,0 +1,11 @@
+{
+  "commands.udt.recipe_print.no_item": "你没有手持任何物品！",
+  "commands.udt.recipe_print.no_recipes": "未找到该物品的配方。",
+  "commands.udt.recipe_print.error": "处理命令时发生错误。",
+  "commands.udt.recipe_print.title": "物品配方：{}",
+  "commands.udt.tag_print.title": "物品标签：{}",
+  "commands.udt.tag_print.no_tags": "该物品没有标签。",
+  "commands.udt.tag_print.compare_title": "物品标签对比：{} 和 {}",
+  "commands.udt.tag_print.no_common_tags": "两个物品没有相同标签。",
+  "commands.udt.tag_print.same_tags": "@相同标签"
+}

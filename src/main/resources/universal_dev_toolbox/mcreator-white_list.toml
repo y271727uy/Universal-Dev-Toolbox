@@ -1,0 +1,8 @@
+# MCreator Whitelist Configuration
+# 将在MCreator模组检测中被跳过的模组ID列表
+# List of mod IDs that should be skipped during MCreator mod detection
+# 格式: "modid"
+# Format: "modid"
+# 示例: "examplemod"
+# Example: "examplemod"
+whitelisted_mods = ["crafttweaker", "kubejs", "rhino", "dglab"]
