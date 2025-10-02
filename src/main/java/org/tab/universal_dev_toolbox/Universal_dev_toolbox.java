@@ -28,16 +28,16 @@ public class Universal_dev_toolbox {
 
         MinecraftForge.EVENT_BUS.register(this);
         
-        // Register configs
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, RecipeNameConfig.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MobBiomeConfig.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BadMobBiomeConfig.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MCreatorBlacklistConfig.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MCreatorWhitelistConfig.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BadPopUpWindowConfig.SPEC);
+        // Register configs with unique filenames to prevent conflicts
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC, "universal_dev_toolbox-common.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, RecipeNameConfig.SPEC, "universal_dev_toolbox-recipe_name.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MobBiomeConfig.SPEC, "universal_dev_toolbox-mob-biome.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BadMobBiomeConfig.SPEC, "universal_dev_toolbox-bad_mob-biome.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MCreatorBlacklistConfig.SPEC, "universal_dev_toolbox-mcreator-black_list.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MCreatorWhitelistConfig.SPEC, "universal_dev_toolbox-mcreator-white_list.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BadPopUpWindowConfig.SPEC, "universal_dev_toolbox-bad_pop-up-window.toml");
         // ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BadModIdConfig.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NewPopUpWindowConfig.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NewPopUpWindowConfig.SPEC, "universal_dev_toolbox-new_pop-up_window.toml");
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
