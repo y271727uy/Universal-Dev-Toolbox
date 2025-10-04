@@ -24,8 +24,9 @@ public class SystemChatEventHandler {
         // 检查消息是否包含任何屏蔽词
         for (String badContent : badContents) {
             if (!badContent.isEmpty() && messageText.contains(badContent)) {
-                // 如果包含屏蔽词，则取消事件，阻止消息显示
-                event.setCanceled(true);
+                // 如果包含屏蔽词，将消息内容替换为空消息而不是取消事件
+                // 这样可以避免某些需要用户交互的弹窗导致游戏卡死的问题
+                event.setMessage(Component.empty());
                 return;
             }
         }

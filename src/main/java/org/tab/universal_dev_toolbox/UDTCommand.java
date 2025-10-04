@@ -55,7 +55,9 @@ public class UDTCommand {
                                         .executes(UDTCommand::handleMCreatorPrint)))
                         .then(Commands.literal("wiki")
                                 .then(Commands.literal("kubejs")
-                                        .executes(UDTCommand::handleWikiKubeJS)))
+                                        .executes(UDTCommand::handleWikiKubeJS))
+                                .then(Commands.literal("crafttweaker")
+                                        .executes(UDTCommand::handleWikiCraftTweaker)))
         );
     }
 
@@ -266,19 +268,44 @@ public class UDTCommand {
             // 发送标题
             source.sendSuccess(() -> Component.literal("kubejs wiki"), false);
             
-            // 发送可点击复制的链接
+            // 发送可点击访问的链接
             String url = "https://kubejs.com/";
             MutableComponent component = Component.literal(" ▪ " + url);
             Style style = Style.EMPTY
                     .withColor(TextColor.parseColor("#55FF55"))
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, url))
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open")));
             component.setStyle(style);
             source.sendSuccess(() -> component, false);
             
             return 1;
         } catch (Exception e) {
             LogUtils.getLogger().error("Error processing /udt wiki kubejs command", e);
+            source.sendFailure(Component.literal("Error occurred while processing command: " + e.getMessage()));
+            return 0;
+        }
+    }
+
+    private static int handleWikiCraftTweaker(CommandContext<CommandSourceStack> context) {
+        CommandSourceStack source = context.getSource();
+        
+        try {
+            // 发送标题
+            source.sendSuccess(() -> Component.literal("crafttweaker wiki"), false);
+            
+            // 发送可点击访问的链接
+            String url = "https://docs.blamejared.com/";
+            MutableComponent component = Component.literal(" ▪ " + url);
+            Style style = Style.EMPTY
+                    .withColor(TextColor.parseColor("#55FF55"))
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open")));
+            component.setStyle(style);
+            source.sendSuccess(() -> component, false);
+            
+            return 1;
+        } catch (Exception e) {
+            LogUtils.getLogger().error("Error processing /udt wiki crafttweaker command", e);
             source.sendFailure(Component.literal("Error occurred while processing command: " + e.getMessage()));
             return 0;
         }
