@@ -1,22 +1,24 @@
-modLoader = "javafml" #mandatory
-loaderVersion = "${loader_version_range}" #mandatory
-license = "${mod_license}"
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "GNU GPL 3.0"
 
-[[mods]] #mandatory
-modId = "${mod_id}" #mandatory
-version = "${mod_version}" #mandatory
-displayName = "${mod_name}" #mandatory
-authors = "${mod_authors}" #optional
-description = '''${mod_description}'''
-[[dependencies."${mod_id}"]] #optional
-modId = "forge" #mandatory
-mandatory = true #mandatory
-versionRange = "${forge_version_range}" #mandatory
+[[mods]]
+modId = "universal_dev_toolbox"
+version = "1.0.0"
+displayName = "Universal Dev Toolbox"
+authors = "y271727uy"
+description = '''通用开发工具箱'''
+
+[[dependencies."universal_dev_toolbox"]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
 ordering = "NONE"
 side = "BOTH"
-[[dependencies."${mod_id}"]]
+
+[[dependencies."universal_dev_toolbox"]]
 modId = "minecraft"
 mandatory = true
-versionRange = "${minecraft_version_range}"
+versionRange = "[1.20.1]"
 ordering = "NONE"
 side = "BOTH"

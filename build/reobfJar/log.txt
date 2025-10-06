@@ -161,6 +161,8 @@ Writing Output: D:\￦ﾖﾇ￦ﾡﾣ\￥ﾼﾀ￥ﾏﾑ￦ﾖﾇ￤ﾻﾶ￥ﾤ
   org/tab/universal_dev_toolbox/RecipeNameConfig.class
   org/tab/universal_dev_toolbox/SystemChatEventHandler.class
   org/tab/universal_dev_toolbox/UDTCommand$ModAnalysisResult.class
+  org/tab/universal_dev_toolbox/UDTCommand$ModCheckResult.class
+  org/tab/universal_dev_toolbox/UDTCommand$ModInfo.class
   org/tab/universal_dev_toolbox/UDTCommand.class
   org/tab/universal_dev_toolbox/Universal_dev_toolbox$ClientModEvents.class
   org/tab/universal_dev_toolbox/Universal_dev_toolbox.class
