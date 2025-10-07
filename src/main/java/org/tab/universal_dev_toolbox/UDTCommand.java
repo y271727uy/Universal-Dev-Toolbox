@@ -78,7 +78,7 @@ public class UDTCommand {
         
         try {
             // 发送开始检查消息
-            source.sendSuccess(() -> Component.literal("Starting Rust mod health check..."), false);
+            source.sendSuccess(() -> Component.translatable("commands.udt.rust_check.starting"), false);
             
             // 获取mods文件夹路径
             File modsDir = new File("mods");
@@ -90,7 +90,7 @@ public class UDTCommand {
             // 获取所有jar文件
             File[] jarFiles = modsDir.listFiles((dir, name) -> name.endsWith(".jar"));
             if (jarFiles == null || jarFiles.length == 0) {
-                source.sendSuccess(() -> Component.literal("No jar files found in mods folder"), false);
+                source.sendSuccess(() -> Component.translatable("commands.udt.rust_check.no_jar_files"), false);
                 return 1;
             }
             
@@ -111,13 +111,13 @@ public class UDTCommand {
                     
                     // 根据检查结果分类
                     switch (result.status) {
-                        case "正常":
+                        case STATUS_NORMAL:
                             normalMods.put(modInfo.name, result);
                             break;
-                        case "部分正常":
+                        case STATUS_PARTIAL:
                             partialMods.put(modInfo.name, result);
                             break;
-                        case "异常":
+                        case STATUS_ABNORMAL:
                             abnormalMods.put(modInfo.name, result);
                             break;
                     }
@@ -125,11 +125,11 @@ public class UDTCommand {
             }
             
             // 输出结果
-            source.sendSuccess(() -> Component.literal("Rust Mod Health Check Results:"), false);
+            source.sendSuccess(() -> Component.translatable("commands.udt.rust_check.results_title"), false);
             
             // 输出异常模组（红色）
             if (!abnormalMods.isEmpty()) {
-                MutableComponent abnormalHeader = Component.literal("异常");
+                MutableComponent abnormalHeader = Component.literal(STATUS_ABNORMAL);
                 Style redStyle = Style.EMPTY.withColor(TextColor.parseColor("#FF5555"));
                 abnormalHeader.setStyle(redStyle);
                 source.sendSuccess(() -> abnormalHeader, false);
@@ -143,7 +143,7 @@ public class UDTCommand {
             
             // 输出部分正常模组（黄色）
             if (!partialMods.isEmpty()) {
-                MutableComponent partialHeader = Component.literal("部分正常");
+                MutableComponent partialHeader = Component.literal(STATUS_PARTIAL);
                 Style yellowStyle = Style.EMPTY.withColor(TextColor.parseColor("#FFFF55"));
                 partialHeader.setStyle(yellowStyle);
                 source.sendSuccess(() -> partialHeader, false);
@@ -157,7 +157,7 @@ public class UDTCommand {
             
             // 输出正常模组（绿色）
             if (!normalMods.isEmpty()) {
-                MutableComponent normalHeader = Component.literal("正常");
+                MutableComponent normalHeader = Component.literal(STATUS_NORMAL);
                 Style greenStyle = Style.EMPTY.withColor(TextColor.parseColor("#55FF55"));
                 normalHeader.setStyle(greenStyle);
                 source.sendSuccess(() -> normalHeader, false);
@@ -171,11 +171,13 @@ public class UDTCommand {
             
             // 如果没有发现任何依赖minrust的模组
             if (minrustDependentModsCount == 0) {
-                source.sendSuccess(() -> Component.literal("未发现有依赖rust的mod"), false);
+                // 根据规范动态生成提示信息
+                source.sendSuccess(() -> Component.translatable("commands.udt.rust_check.no_rust_mods"), false);
             }
             // 如果没有发现任何异常，显示绿色提示
             else if (abnormalMods.isEmpty() && partialMods.isEmpty() && !normalMods.isEmpty()) {
-                MutableComponent noIssuesComponent = Component.literal("未发现依赖Rust的mod有异常");
+                // 根据规范动态生成绿色提示信息
+                MutableComponent noIssuesComponent = Component.translatable("commands.udt.rust_check.no_issues");
                 Style greenStyle = Style.EMPTY.withColor(TextColor.parseColor("#55FF55"));
                 noIssuesComponent.setStyle(greenStyle);
                 source.sendSuccess(() -> noIssuesComponent, false);
@@ -198,27 +200,27 @@ public class UDTCommand {
                 .findFirst();
         
         if (!minrustMod.isPresent()) {
-            source.sendFailure(Component.literal("MinRust mod is not installed"));
+            source.sendFailure(Component.translatable("commands.udt.minrust_check.not_installed"));
             return 0;
         }
         
         // 打印标题
-        source.sendSuccess(() -> Component.literal("MinRust Mod Information:"), false);
+        source.sendSuccess(() -> Component.translatable("commands.udt.minrust_check.title"), false);
         
         // 打印版本和modid
         IModInfo modInfo = minrustMod.get();
-        source.sendSuccess(() -> Component.literal("Mod ID: " + modInfo.getModId()), false);
-        source.sendSuccess(() -> Component.literal("Version: " + modInfo.getVersion()), false);
+        source.sendSuccess(() -> Component.translatable("commands.udt.minrust_check.mod_id", modInfo.getModId()), false);
+        source.sendSuccess(() -> Component.translatable("commands.udt.minrust_check.version", modInfo.getVersion()), false);
         
         // 打印Rust相关信息
-        source.sendSuccess(() -> Component.literal("Rust Version: 2021 edition or later"), false);
-        source.sendSuccess(() -> Component.literal("Rust Project Name: minrust-native"), false);
-        source.sendSuccess(() -> Component.literal("Rust Project Version: 0.1.0"), false);
-        source.sendSuccess(() -> Component.literal("Main Dependency: jni = \"0.21\""), false);
-        source.sendSuccess(() -> Component.literal("Library Type: cdylib (C Dynamic Library)"), false);
+        source.sendSuccess(() -> Component.translatable("commands.udt.minrust_check.rust_version"), false);
+        source.sendSuccess(() -> Component.translatable("commands.udt.minrust_check.project_name"), false);
+        source.sendSuccess(() -> Component.translatable("commands.udt.minrust_check.project_version"), false);
+        source.sendSuccess(() -> Component.translatable("commands.udt.minrust_check.main_dependency"), false);
+        source.sendSuccess(() -> Component.translatable("commands.udt.minrust_check.library_type"), false);
         
         // 红色警告字体
-        MutableComponent warning = Component.literal("Please check your rust code");
+        MutableComponent warning = Component.translatable("commands.udt.minrust_check.warning");
         Style warningStyle = Style.EMPTY.withColor(TextColor.parseColor("#FF5555"));
         warning.setStyle(warningStyle);
         source.sendSuccess(() -> warning, false);
@@ -497,6 +499,11 @@ public class UDTCommand {
         }
     }
     
+    // 定义状态常量以避免硬编码
+    private static final String STATUS_NORMAL = "正常";
+    private static final String STATUS_PARTIAL = "部分正常";
+    private static final String STATUS_ABNORMAL = "异常";
+    
     private static ModInfo extractModInfo(File jarFile) {
         try (JarFile jar = new JarFile(jarFile)) {
             // 查找mods.toml
@@ -650,22 +657,24 @@ public class UDTCommand {
                     .findFirst();
             
             if (!loadedMod.isPresent()) {
-                return new ModCheckResult("异常", "Mod not loaded in current environment");
+                // 使用动态状态标识而不是硬编码
+                return new ModCheckResult(STATUS_ABNORMAL, Component.translatable("commands.udt.rust_check.mod_not_loaded").getString());
             }
             
             // 检查基本功能（这里只是示例，实际检查需要根据具体模组实现）
             boolean basicFunctionality = checkBasicFunctionality(jarFile, modInfo);
             boolean exceptionHandling = checkExceptionHandling(jarFile, modInfo);
             
+            // 使用动态状态标识而不是硬编码
             if (basicFunctionality && exceptionHandling) {
-                return new ModCheckResult("正常", "All checks passed");
+                return new ModCheckResult(STATUS_NORMAL, Component.translatable("commands.udt.rust_check.all_checks_passed").getString());
             } else if (basicFunctionality || exceptionHandling) {
-                return new ModCheckResult("部分正常", "Some checks failed");
+                return new ModCheckResult(STATUS_PARTIAL, Component.translatable("commands.udt.rust_check.some_checks_failed").getString());
             } else {
-                return new ModCheckResult("异常", "Critical functionality failed");
+                return new ModCheckResult(STATUS_ABNORMAL, Component.translatable("commands.udt.rust_check.critical_failed").getString());
             }
         } catch (Exception e) {
-            return new ModCheckResult("异常", "Exception during health check: " + e.getMessage());
+            return new ModCheckResult(STATUS_ABNORMAL, Component.translatable("commands.udt.rust_check.exception", e.getMessage()).getString());
         }
     }
     
