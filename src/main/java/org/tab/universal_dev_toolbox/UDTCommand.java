@@ -47,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class UDTCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -70,6 +72,11 @@ public class UDTCommand {
                                         .executes(UDTCommand::handleMinRust))
                                 .then(Commands.literal("RustforMod")
                                         .executes(UDTCommand::handleRustforMod)))
+                        .then(Commands.literal("player-backpack")
+                                .then(Commands.literal("kubejs")
+                                        .executes(UDTCommand::handlePlayerBackpackKubeJS))
+                                .then(Commands.literal("crafttweaker")
+                                        .executes(UDTCommand::handlePlayerBackpackCraftTweaker)))
         );
     }
 
@@ -1000,19 +1007,25 @@ public class UDTCommand {
             ResourceLocation mainHandItemId = ForgeRegistries.ITEMS.getKey(mainHandItem.getItem());
             ResourceLocation offHandItemId = ForgeRegistries.ITEMS.getKey(offHandItem.getItem());
             
-            // 发送结果给玩家
-            source.sendSuccess(() -> Component.translatable("commands.udt.tag_print.compare_title", mainHandItemId.toString(), offHandItemId.toString()), false);
+            // 发送标题
+            source.sendSuccess(() -> Component.translatable("commands.udt.tag_compare.title", mainHandItemId.toString(), offHandItemId.toString()), false);
             
-            // 找到相同的标签
+            // 查找共同标签
             Set<TagKey<Item>> commonTags = new HashSet<>(mainHandTags);
             commonTags.retainAll(offHandTags);
             
-            if (commonTags.isEmpty()) {
-                source.sendSuccess(() -> Component.translatable("commands.udt.tag_print.no_common_tags"), false);
-            } else {
+            // 查找各自独有的标签
+            Set<TagKey<Item>> mainHandOnlyTags = new HashSet<>(mainHandTags);
+            mainHandOnlyTags.removeAll(offHandTags);
+            
+            Set<TagKey<Item>> offHandOnlyTags = new HashSet<>(offHandTags);
+            offHandOnlyTags.removeAll(mainHandTags);
+            
+            // 显示共同标签
+            if (!commonTags.isEmpty()) {
+                source.sendSuccess(() -> Component.translatable("commands.udt.tag_compare.common"), false);
                 Map<String, StringBuilder> tagMap = new HashMap<>();
                 
-                // 按模组分组相同标签
                 for (TagKey<Item> tag : commonTags) {
                     ResourceLocation tagId = tag.location();
                     String modId = tagId.getNamespace();
@@ -1024,8 +1037,6 @@ public class UDTCommand {
                             .append("'\n");
                 }
                 
-                // 显示相同标签信息
-                source.sendSuccess(() -> Component.translatable("commands.udt.tag_print.same_tags"), false);
                 tagMap.forEach((modId, tagsBuilder) -> {
                     // 移除末尾的换行符
                     if (tagsBuilder.length() > 0 && tagsBuilder.charAt(tagsBuilder.length() - 1) == '\n') {
@@ -1034,6 +1045,9 @@ public class UDTCommand {
                     
                     // 分割标签列表
                     String[] lines = tagsBuilder.toString().split("\n");
+                    
+                    // 显示模组标题
+                    source.sendSuccess(() -> Component.literal("@" + modId), false);
                     
                     // 为每个标签创建可点击复制的绿色文本
                     for (String line : lines) {
@@ -1051,10 +1065,195 @@ public class UDTCommand {
                 });
             }
             
+            // 显示主手物品独有标签
+            if (!mainHandOnlyTags.isEmpty()) {
+                source.sendSuccess(() -> Component.translatable("commands.udt.tag_compare.main_hand_only", mainHandItemId.toString()), false);
+                Map<String, StringBuilder> tagMap = new HashMap<>();
+                
+                for (TagKey<Item> tag : mainHandOnlyTags) {
+                    ResourceLocation tagId = tag.location();
+                    String modId = tagId.getNamespace();
+                    tagMap.computeIfAbsent(modId, k -> new StringBuilder())
+                            .append("'")
+                            .append(tagId.getNamespace())
+                            .append(":")
+                            .append(tagId.getPath())
+                            .append("'\n");
+                }
+                
+                tagMap.forEach((modId, tagsBuilder) -> {
+                    // 移除末尾的换行符
+                    if (tagsBuilder.length() > 0 && tagsBuilder.charAt(tagsBuilder.length() - 1) == '\n') {
+                        tagsBuilder.setLength(tagsBuilder.length() - 1);
+                    }
+                    
+                    // 分割标签列表
+                    String[] lines = tagsBuilder.toString().split("\n");
+                    
+                    // 显示模组标题
+                    source.sendSuccess(() -> Component.literal("@" + modId), false);
+                    
+                    // 为每个标签创建可点击复制的绿色文本
+                    for (String line : lines) {
+                        if (!line.isEmpty()) {
+                            MutableComponent component = Component.literal(" ▪ " + line);
+                            // 设置绿色文本样式
+                            Style style = Style.EMPTY
+                                    .withColor(TextColor.parseColor("#55FF55"))
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, line))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
+                            component.setStyle(style);
+                            source.sendSuccess(() -> component, false);
+                        }
+                    }
+                });
+            }
+            
+            // 显示副手物品独有标签
+            if (!offHandOnlyTags.isEmpty()) {
+                source.sendSuccess(() -> Component.translatable("commands.udt.tag_compare.off_hand_only", offHandItemId.toString()), false);
+                Map<String, StringBuilder> tagMap = new HashMap<>();
+                
+                for (TagKey<Item> tag : offHandOnlyTags) {
+                    ResourceLocation tagId = tag.location();
+                    String modId = tagId.getNamespace();
+                    tagMap.computeIfAbsent(modId, k -> new StringBuilder())
+                            .append("'")
+                            .append(tagId.getNamespace())
+                            .append(":")
+                            .append(tagId.getPath())
+                            .append("'\n");
+                }
+                
+                tagMap.forEach((modId, tagsBuilder) -> {
+                    // 移除末尾的换行符
+                    if (tagsBuilder.length() > 0 && tagsBuilder.charAt(tagsBuilder.length() - 1) == '\n') {
+                        tagsBuilder.setLength(tagsBuilder.length() - 1);
+                    }
+                    
+                    // 分割标签列表
+                    String[] lines = tagsBuilder.toString().split("\n");
+                    
+                    // 显示模组标题
+                    source.sendSuccess(() -> Component.literal("@" + modId), false);
+                    
+                    // 为每个标签创建可点击复制的绿色文本
+                    for (String line : lines) {
+                        if (!line.isEmpty()) {
+                            MutableComponent component = Component.literal(" ▪ " + line);
+                            // 设置绿色文本样式
+                            Style style = Style.EMPTY
+                                    .withColor(TextColor.parseColor("#55FF55"))
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, line))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
+                            component.setStyle(style);
+                            source.sendSuccess(() -> component, false);
+                        }
+                    }
+                });
+            }
+            
+            // 如果没有标签差异
+            if (commonTags.isEmpty() && mainHandOnlyTags.isEmpty() && offHandOnlyTags.isEmpty()) {
+                source.sendSuccess(() -> Component.translatable("commands.udt.tag_compare.no_tags"), false);
+            }
+            
             return 1;
         } catch (Exception e) {
             LogUtils.getLogger().error("Error comparing item tags", e);
             source.sendFailure(Component.translatable("commands.udt.recipe_print.error"));
+            return 0;
+        }
+    }
+    
+    // 新增处理函数：处理 /udt player-backpack kubejs 命令
+    private static int handlePlayerBackpackKubeJS(CommandContext<CommandSourceStack> context) {
+        return handlePlayerBackpack(context, "kubejs");
+    }
+
+    // 新增处理函数：处理 /udt player-backpack crafttweaker 命令
+    private static int handlePlayerBackpackCraftTweaker(CommandContext<CommandSourceStack> context) {
+        return handlePlayerBackpack(context, "crafttweaker");
+    }
+
+    // 新增核心函数：处理玩家背包扫描和文件写入
+    private static int handlePlayerBackpack(CommandContext<CommandSourceStack> context, String formatType) {
+        CommandSourceStack source = context.getSource();
+        
+        try {
+            // 确保玩家存在
+            if (source.getPlayerOrException() == null) {
+                source.sendFailure(Component.literal("该命令只能由玩家执行"));
+                return 0;
+            }
+            
+            // 获取玩家主物品栏
+            var player = source.getPlayerOrException();
+            var inventory = player.getInventory();
+            
+            // 构建物品ID列表
+            StringBuilder itemIdsBuilder = new StringBuilder();
+            
+            // 遍历主物品栏（不包括副手、盔甲等）
+            for (int i = 0; i < inventory.items.size(); i++) {
+                ItemStack stack = inventory.items.get(i);
+                if (!stack.isEmpty()) {
+                    ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+                    if (itemId != null) {
+                        if (itemIdsBuilder.length() > 0) {
+                            itemIdsBuilder.append(" ");
+                        }
+                        
+                        if ("kubejs".equals(formatType)) {
+                            itemIdsBuilder.append("'").append(itemId.toString()).append("'");
+                        } else if ("crafttweaker".equals(formatType)) {
+                            itemIdsBuilder.append("<item:").append(itemId.toString()).append(">");
+                        }
+                    }
+                }
+            }
+            
+            String itemIds = itemIdsBuilder.toString();
+            
+            // 异步写入文件
+            String finalItemIds = itemIds;
+            Thread writeFileThread = new Thread(() -> {
+                try {
+                    // 创建目录
+                    File dir = new File("config/universal_dev_toolbox/player-backpack");
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+                    
+                    // 生成唯一文件名
+                    String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+                    String filename = "backpack-" + timestamp + ".txt";
+                    File outputFile = new File(dir, filename);
+                    
+                    // 写入文件
+                    try (FileWriter writer = new FileWriter(outputFile, StandardCharsets.UTF_8)) {
+                        writer.write(finalItemIds);
+                    }
+                    
+                    // 在主线程中发送成功消息
+                    source.getServer().execute(() -> {
+                        source.sendSuccess(() -> Component.literal("背包扫描完成，文件已保存至: " + outputFile.getAbsolutePath()), false);
+                    });
+                } catch (IOException e) {
+                    LogUtils.getLogger().error("写入背包扫描文件时出错", e);
+                    source.getServer().execute(() -> {
+                        source.sendFailure(Component.literal("写入文件时出错: " + e.getMessage()));
+                    });
+                }
+            });
+            
+            writeFileThread.setDaemon(true);
+            writeFileThread.start();
+            
+            return 1;
+        } catch (Exception e) {
+            LogUtils.getLogger().error("处理 /udt player-backpack 命令时出错", e);
+            source.sendFailure(Component.literal("处理命令时出错: " + e.getMessage()));
             return 0;
         }
     }
