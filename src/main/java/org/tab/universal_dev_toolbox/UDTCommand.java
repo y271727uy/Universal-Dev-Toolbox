@@ -281,13 +281,12 @@ public class UDTCommand {
                 
                 ModAnalysisResult result = analyzeJarFile(jarFile);
                 
-                // 根据规则判断分类
-                if ((result.condition1 && result.condition2 && result.condition3 && result.condition4) || // 全部满足
-                    (result.condition1 && result.condition4) || // 条件1和4各自满足一次
+                // 根据规则判断分类（移除了容易误判的条件4）
+                if ((result.condition1 && result.condition2 && result.condition3) || // 全部满足（除条件4外）
                     (result.condition2 && result.condition3) || // 条件2和3满足
                     result.condition5) { // 满足条件5
                     confirmedMCreatorMods.computeIfAbsent(modFileName, k -> new HashSet<>()).addAll(result.reasons);
-                } else if (result.condition1 || result.condition4) { // 只满足条件1或4
+                } else if (result.condition1) { // 只满足条件1
                     suspectedMCreatorMods.computeIfAbsent(modFileName, k -> new HashSet<>()).addAll(result.reasons);
                 }
             }
@@ -381,13 +380,12 @@ public class UDTCommand {
                 
                 ModAnalysisResult result = analyzeJarFile(jarFile);
                 
-                // 根据规则判断分类
-                if ((result.condition1 && result.condition2 && result.condition3 && result.condition4) || // 全部满足
-                    (result.condition1 && result.condition4) || // 条件1和4各自满足一次
+                // 根据规则判断分类（移除了容易误判的条件4）
+                if ((result.condition1 && result.condition2 && result.condition3) || // 全部满足（除条件4外）
                     (result.condition2 && result.condition3) || // 条件2和3满足
                     result.condition5) { // 满足条件5
                     confirmedMCreatorMods.computeIfAbsent(modFileName, k -> new HashSet<>()).addAll(result.reasons);
-                } else if (result.condition1 || result.condition4) { // 只满足条件1或4
+                } else if (result.condition1) { // 只满足条件1
                     suspectedMCreatorMods.computeIfAbsent(modFileName, k -> new HashSet<>()).addAll(result.reasons);
                 }
             }
@@ -716,7 +714,7 @@ public class UDTCommand {
         boolean condition1 = false; // 存在mcreator或procedures文件夹
         boolean condition2 = false; // mods.toml或fabric.mod.json中出现mcreator
         boolean condition3 = false; // java包名出现mcreator
-        boolean condition4 = false; // 出现模板化名字(XxxMod.java等)
+        boolean condition4 = false; // 出现模板化名字(XxxMod.java等)（已废弃）
         boolean condition5 = false; // 存在Procedure类
         Set<String> reasons = new HashSet<>();
     }
@@ -745,18 +743,18 @@ public class UDTCommand {
                     result.reasons.add("Contains mcreator in package names");
                 }
                 
-                // 条件4: 检查是否有模板化的类名
-                if (entryName.endsWith(".class") || entryName.endsWith(".java")) {
-                    String className = new File(entryName).getName();
-                    // 检查类似XxxMod.java, XxxModItems等模板化命名
-                    if (Pattern.compile(".*[Mm]od.*\\.(class|java)").matcher(className).matches() ||
-                        Pattern.compile(".*[Mm]od[Ii]tems.*\\.(class|java)").matcher(className).matches() ||
-                        Pattern.compile(".*[Mm]od[Bb]locks.*\\.(class|java)").matcher(className).matches() ||
-                        Pattern.compile(".*[Mm]od[Ee]ntities.*\\.(class|java)").matcher(className).matches()) {
-                        result.condition4 = true;
-                        result.reasons.add("Contains template-like class names");
-                    }
-                }
+                // 条件4: 检查是否有模板化的类名（已废弃，不再使用）
+                // if (entryName.endsWith(".class") || entryName.endsWith(".java")) {
+                //     String className = new File(entryName).getName();
+                //     // 检查类似XxxMod.java, XxxModItems等模板化命名
+                //     if (Pattern.compile(".*[Mm]od.*\\.(class|java)").matcher(className).matches() ||
+                //         Pattern.compile(".*[Mm]od[Ii]tems.*\\.(class|java)").matcher(className).matches() ||
+                //         Pattern.compile(".*[Mm]od[Bb]locks.*\\.(class|java)").matcher(className).matches() ||
+                //         Pattern.compile(".*[Mm]od[Ee]ntities.*\\.(class|java)").matcher(className).matches()) {
+                //         result.condition4 = true;
+                //         result.reasons.add("Contains template-like class names");
+                //     }
+                // }
                 
                 // 条件5: 检查是否存在Procedure类
                 if ((entryName.endsWith(".class") || entryName.endsWith(".java")) && 
